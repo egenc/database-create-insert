@@ -2,11 +2,15 @@
 This script will create a table in a PostgreSQL database and
 insert data from a CSV file.
 """
+import time
 import psycopg2
-from psycopg2 import sql
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import pandas as pd
 import logging
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+import os
+
 
 # Set up logging
 logging.basicConfig(
@@ -25,7 +29,7 @@ DB_CONFIG = {
     'user': 'postgres',
     'password': '123'
 }
-FILE_NAME = 'System_engineer_question3.csv'
+FILE_NAME = 'data/data.csv'
 COL_NAMES = [
     'ID', 'id', 'seq', 'origin', 'Asn - deamidation risk Cnt', 'Cys Cnt', 'Isomerization Cnt', 'Met Cnt', 'N-Glycosylation Cnt',
     'Pro Cnt', 'Strong Deamidation Cnt', 'Weak Deamidation Cnt', 'SEQUENCE_TYPE', 'STOICHIOMETRY', 'Format', 'Isotype'
@@ -39,7 +43,7 @@ def create_conn(DB_CONFIG):
 
 
 def create_table(cur):
-    cur.execute('DROP TABLE IF EXISTS BioSequenceData')
+    # cur.execute('DROP TABLE IF EXISTS BioSequenceData')
     cur.execute(
         """
         CREATE TABLE IF NOT EXISTS BioSequenceData (
@@ -61,8 +65,10 @@ def create_table(cur):
         );
         """
     )
-    logging.info('Table created successfully')
-
+    if cur.rowcount == -1: # checks if table exists
+        logging.info('Table is present - No action needed')
+    else:
+        logging.info('Table created successfully')
 
 def single_insert(conn, cur, row_data):
     """ Execute a single INSERT request """
@@ -109,18 +115,45 @@ def read_and_transform_df(dataframe, columns):
     dataframe = dataframe[dataframe['ID'].notna()].set_index('ID', drop=True)
     return dataframe
 
-
-def main():
+def feed_csv(dataframe):
     conn = create_conn(DB_CONFIG)
     if conn is not None:
         cur = conn.cursor()
         create_table(cur)
-        df = read_and_transform_df(FILE_NAME, COL_NAMES)
+        df = read_and_transform_df(dataframe, COL_NAMES)
         # Assume df is the DataFrame you want to insert
         insert_data(conn, cur, df)
         cur.close()
         conn.close()
 
+class CSVHandler(FileSystemEventHandler):
+    def on_created(self, event):
+        if event.is_directory:
+            return
+
+        # Check if the created file is a CSV file
+        if event.src_path.endswith(".csv"):
+            # Process the newly created CSV file
+            feed_csv(event.src_path)
+            
 
 if __name__ == "__main__":
-    main()
+    feed_csv(FILE_NAME)
+    # Initialize the watchdog observer
+    observer = Observer()
+    event_handler = CSVHandler()
+
+    # Schedule the observer to watch the input folder for new CSV files
+    observer.schedule(event_handler, path='data', recursive=False)
+
+    # Start the observer in the background
+    observer.start()
+
+    try:
+        while True:
+            time.sleep(1)  # Keep the script running
+
+    except KeyboardInterrupt:
+        observer.stop()
+
+    observer.join()
