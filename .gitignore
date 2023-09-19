@@ -1,0 +1,84 @@
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+
+# Ignore virtual environment directories
+venv/
+env/
+*.env
+
+# Ignore logs and log files
+*.log
+log/
+logs/
+
+# Ignore database files
+*.db
+*.sqlite
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore generated and compiled files
+*.o
+*.lo
+*.la
+*.a
+*.obj
+*.dll
+*.so
+*.dylib
+*.exe
+*.out
+*.app
+
+# Ignore built or compiled binary files
+build/
+dist/
+node_modules/
+
+# Ignore cached files
+.cache/
+.cachedir/
+
+# Ignore editor/IDE-specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore temporary files
+*.swp
+*~
+*.bak
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Ignore environment-specific files
+.env
+
+# Ignore sensitive or private information
+secrets.ini
+secrets.yaml
+*.key
+*.pem
+
+# Ignore generated documentation
+docs/_build/
+
+# Ignore configuration files with sensitive information
+config.ini
+config.yaml
+config.json
+
+# Ignore compiled or minified files
+*.min.js
+*.min.css
+
+# Ignore specific directories or files
+node_modules/
+.idea/
+.vscode/
