@@ -58,7 +58,7 @@ ORDER BY project_name ASC;
 ## 1. Columns for Machine Learning
 This info relies on personal research and it is prone to errors.
 - **'seq'**: The sequence itself is vital for various types of sequence analysis models.
-- **'origin'**: Source of sequence could be a factor for classification or clustering tasks.
+- **'origin'**: Source of sequence could be a factor for classification or clustering tasks (Namely NLP tasks such as Named Entity Recognition, Relation Extraction etc.).
 - **'Asn - deamidation risk Cnt'**: Might be useful for predicting sequence stability or interactions.
 - **'Cys Cnt'**: Cysteine count could be related to the formation of disulfide bonds, affecting structure.
 - **'Isomerization Cnt'**: Could be useful for predicting potential changes in structural conformation.
